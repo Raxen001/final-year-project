@@ -1,29 +1,26 @@
 import ollama
-from ollama import Client
-
-from pprint import pprint
-
 import os
-from guidance import models, gen
 
 HOST = os.environ.get("LLAMA_HOST", "http://localhost:11434")
 MODEL = os.environ.get("LLAMA_MODEL", "qwen2.5-coder:7b")
-client = Client(
-  host=HOST
-)
-
 MODELNAME='raven'
 MODELFILE='''
 FROM qwen2.5-coder:7b
-SYSTEM you should only ouput the necessary dockercompose.yml and nothing else. no verbose output
+SYSTEM you should only ouput the necessary dockercompose.yml and nothing else. no verbose output, no naml\\n or ``` 
 '''
+
+client = ollama.Client(
+  host=HOST
+)
 ollama.create(model=MODELNAME, modelfile=MODELFILE)
 
+def gen_yaml(content):
 
-content = "Create me a python3 docker container to run my main.py"
-response = client.generate(
-    model=MODELNAME,
-    prompt=content,
-)
+    response = client.generate(
+        model=MODELNAME,
+        prompt=content,
+    )
+    yaml = response['response']
+    return yaml
 
-pprint(response['response'])
+
