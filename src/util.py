@@ -7,7 +7,7 @@ MODEL = os.environ.get("LLAMA_MODEL", "qwen2.5-coder:7b")
 MODELNAME='raven'
 MODELFILE='''
 FROM qwen2.5-coder:7b
-SYSTEM you should only ouput the necessary dockercompose.yml and nothing else. no verbose output.'''
+SYSTEM you should only ouput the necessary dockercompose.yml and nothing else. no verbose output. Do not use build if no dockerfile was given in the input. install necessary dependencies'''
 
 client = ollama.Client(
   host=HOST
@@ -20,7 +20,7 @@ not use any privilaged ports in the host machine example instead of using 80:80
 portmapping use 8080:80 and output the url nginx, or web hosting. 
 '''
 
-def gen_ai_output(content):
+def gen_ai_output(content, flag = False):
 
     response = client.generate(
         model=MODELNAME,
@@ -28,9 +28,9 @@ def gen_ai_output(content):
     )
 
     output = response['response']
-    # if 'nginx' in output:
-    #     print('[WARN]: nginix detected running on non priv port')
-    #     return gen_ai_output(content + NO_PRIV_PORT)
+    if 'nginx' in output and flag == False:
+        print('[WARN]: nginix detected running on non priv port')
+        return gen_ai_output(content + NO_PRIV_PORT, flag=True)
     return output
 
 def gen_yaml(content):
