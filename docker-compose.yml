@@ -4,6 +4,10 @@ services:
     image: ollama/ollama
     ports:
       - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=https://invictus.localhost:*
+      - OLLAMA_ORIGINS=http://invictus.localhost:*
     volumes:
       - "./ollama/:/root/.ollama"
 
@@ -15,3 +19,4 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
