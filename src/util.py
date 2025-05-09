@@ -3,21 +3,19 @@ import os
 import re
 
 HOST = os.environ.get("LLAMA_HOST", "http://localhost:11434")
-MODEL = os.environ.get("LLAMA_MODEL", "qwen2.5-coder:7b")
+MODEL = os.environ.get("LLAMA_MODEL", "qwen2.5-coder:3b")
 MODELNAME='raven'
-MODELFILE='''
-FROM qwen2.5-coder:7b
-SYSTEM you should only ouput the necessary dockercompose.yml and nothing else. no verbose output. Do not use build if no dockerfile was given in the input. install necessary dependencies'''
+MODEL_SYSTEM = ' SYSTEM you should only ouput the necessary dockercompose.yml and nothing else. no verbose output. Do not use build if no dockerfile was given in the input. install necessary dependencies'
 
 client = ollama.Client(
   host=HOST
 )
-ollama.create(model=MODELNAME, modelfile=MODELFILE)
+ollama.create(model=MODELNAME, from_=MODEL, system=MODEL_SYSTEM)
 
 NO_PRIV_PORT =  ''' 
 IF YOU ARE USING A WEB SERVER suck as nginx, traeiffik Do
 not use any privilaged ports in the host machine example instead of using 80:80
-portmapping use 8080:80 and output the url nginx, or web hosting. 
+portmapping use 8080:80 and output the url nginx, or web hosting.
 '''
 
 def gen_ai_output(content, flag = False):

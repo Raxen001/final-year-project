@@ -9,14 +9,15 @@ from time import sleep
 
 import util
 
-IGNORE_LIST = ['docker-compose.yml', '.gitignore', 'package.json']
+IGNORE_LIST = ["docker-compose.yml", ".gitignore", "package.json"]
 LINE_COUNT_MAX = 500
-NEW_LINE = '\n'
+NEW_LINE = "\n"
 SPACE = " "
 
 input_path = ""
 docker_path = ""
 # docker_path = "/home/raxen/Code/projects/ai-deployer/src/test/html/docker-compose.yml"
+
 
 def get_path():
     global input_path, docker_path
@@ -31,6 +32,7 @@ def get_path():
     print("[LOG]: DOCKER COMPOSE PATH LOADED: ", docker_path)
     return input_path
 
+
 def get_contents():
     files = glob.glob(os.path.join(get_path(), "*.*"))
     content = str(files) + NEW_LINE
@@ -39,31 +41,31 @@ def get_contents():
             break
 
         content += file + NEW_LINE
-        with open(file, 'r') as f:
+        with open(file, "r") as f:
             for _ in range(LINE_COUNT_MAX):
                 content += f.readline()
 
     return content
 
+
 def write_docker_compose():
     docker_yaml = util.gen_yaml(get_contents())
-    if 'ports' in docker_yaml.lower():
+    if "ports" in docker_yaml.lower():
         print("[LOG]:", "FOUND PORT, DOING PORT FORWARDING")
         os.system("sudo tailscale funnel --bg 8080")
-        os.system("qrencode -t ansi https://legion.tailaadcc.ts.net/")
+        os.system("qrencode -t ansi https://legion-1.tailaadcc.ts.net/")
     try:
-        with open(docker_path, 'x') as docker_file:
+        with open(docker_path, "x") as docker_file:
             docker_file.write(docker_yaml)
             print("[LOG]:", "Docker Compose has been written successfully.")
     except FileExistsError:
-        with open(docker_path, 'w') as docker_file:
+        with open(docker_path, "w") as docker_file:
             docker_file.write(docker_yaml)
             print("[LOG]:", "Docker Compose has been written successfully.")
 
 
 def run_docker():
-
-    print('[LOG]: Trying to start the docker container...', docker_path)
+    print("[LOG]: Trying to start the docker container...", docker_path)
     command = "docker compose -f " + docker_path + " up"
     os.system(command)
     # command = ['docker', 'compose', '-f', docker_path, 'up', '-d']
@@ -76,6 +78,7 @@ def run_docker():
     # else:
     #     stdout, stderr = ps.communicate()
     #     print("[ERROR]:", '[DOCKER ERROR]', stderr)
+
 
 if __name__ == "__main__":
     write_docker_compose()
